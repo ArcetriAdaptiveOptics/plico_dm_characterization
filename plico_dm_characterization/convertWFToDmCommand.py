@@ -79,6 +79,7 @@ class Converter():
         detector_mask: numpy array [pixels, pixels]
         '''
         self._analysisMask = None
+        self._intMat = None
         self._rec = None
         self._analysisMask = mask_from_ima
 

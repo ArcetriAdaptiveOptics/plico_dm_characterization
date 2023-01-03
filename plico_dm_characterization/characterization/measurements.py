@@ -37,7 +37,7 @@ class MeasurementAcquisition():
         maxComm = max(abs(cmd_to_apply))
         print('max command= %f' % maxComm)
 
-        if maxComm>config.MAX_COMMAND_TO_APPLY:
+        if maxComm>float(config.MAX_COMMAND_TO_APPLY):
             raise OSError('Actuator command too large')
         else:
             self.dm.set_shape(cmd_to_apply)

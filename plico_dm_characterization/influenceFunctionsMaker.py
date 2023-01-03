@@ -134,6 +134,7 @@ class IFMaker():
             temp.interf_save_phasemap(dove, file_name, masked_image)
 
         self._coord = self._maskGeometryCalculator(masked_image)
+        self._dm.set_shape(np.zeros(self._nActs))
 
         #import code
         #code.interact(local=dict(globals(), **locals()))
