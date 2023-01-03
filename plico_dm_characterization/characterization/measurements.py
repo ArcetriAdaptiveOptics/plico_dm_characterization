@@ -18,16 +18,23 @@ from plico_dm_characterization.convertWFToDmCommand import Converter
 
 class MeasurementAcquisition():
 
-    def __init__(self, deformable_mirror, interferometer, tn_iff):
+    def __init__(self, deformable_mirror, interferometer):
         self.dm = deformable_mirror
         self.interf = interferometer
-        self.converter = Converter(tn_iff)
 
-    def flattening(self):
+    def flattening(self, tn_iff):
+        '''
+        Parameters
+        ----------
+        tn_iff: string
+            tracking number of if function to use for the reconstructor calculation
+        '''
+        converter = Converter(tn_iff)
+
         fold_for_meas = config.FLAT_ROOT_FOLD
         dove, tt = TtFolder(fold_for_meas).createFolderToStoreMeasurements()
         wf = self.interf.wavefront()
-        command = self.converter.fromWfToDmCommand(wf)
+        command = converter.fromWfToDmCommand(wf)
         fits.writeto(dove + 'imgstart.fits', wf.data)
         fits.append(dove + 'imgstart.fits', wf.mask.astype(int))
         fits.writeto(dove + 'flatDeltaCommand.fits', command)
@@ -51,11 +58,12 @@ class MeasurementAcquisition():
         fits.writeto(dove + 'flatCommand.fits', self._commandToApply)
         return tt
 
-    def closeLoop(self, n_meas):
+    def closeLoop(self, n_meas, delay=0):
         tt_list = []
         for i in range(0, n_meas):
             tt = self.flattening()
             tt_list.append(tt)
+            time.sleep(delay)
         return tt_list
 
     def opticalMonitoring(self, n_images, delay):
@@ -95,18 +103,12 @@ class MeasurementAcquisition():
 
             time.sleep(delay)
 
-    def linearity(self, cmd_matrix_tag, vector_of_amplitude_for_meas):
+    def _actuator_linearity(self, actuator_to_test, vector_of_amplitude_for_meas):
         '''
-        la cmd matrix se la costruisce l'utente mettendo 1 agli attuatori che vuole
-        misurare. L'ampiezza la creo io.
-        Nella cartella finale sono comprese una cartella per ogni valore di amp
-        presente nel vettore in ingresso dato che per ogni amp si usa l'iffMaker
-
         Parameters
         ----------
-        cmd_matrix_tag: string
-            tag for command matrix containing 1 on the diagonal for the actuators
-            to be used
+        actuators_to_test: int
+            vector containing the number of actuator to test for linearity
         vector_of_amplitude_for_meas: numpy array
             vector containing the amplitude values to be given to the actuators
             to make the measurement
@@ -116,29 +118,39 @@ class MeasurementAcquisition():
         tt = string
             tracking number of measurements
         '''
-        mb = ModalBase.loadFromFits(cmd_matrix_tag)
-        cmd_matrix = mb.getModalBase()
-        ma = ModalAmplitude()
-        amp_list_tag = []
-        for i in range(vector_of_amplitude_for_meas.size):
-            amp = vector_of_amplitude_for_meas[i]
-            single_amp = np.zeros(cmd_matrix.shape[0]) + amp
-            tag = 'amp%.02f' %amp
-            ma.saveAsFits(tag, single_amp)
-            amp_list_tag.append(tag)
+        cmd0 = np.zeros(self.dm.get_number_of_actuators())
 
-
+        ima_amp_list = []
+        for j in range(vector_of_amplitude_for_meas.shape[0]):
+            cmd = cmd0
+            cmd[actuator_to_test] = vector_of_amplitude_for_meas[j]
+            
+            template = np.array([1,-1,1])
+            ima_list = []
+            for temp in template:
+                self.dm.set_shape(cmd*temp)
+                ima = self.interf.wavefront()
+                ima_list.append(ima)
+            final_ima = ima_list[0] - 2*ima_list[1] + ima_list[2]
+            ima_amp_list.append(final_ima)
+        return ima_amp_list
+        
+    def linearity(self, vector_of_actuators_to_test, vector_of_amplitude_for_meas): 
         fold_for_meas = config.LINEARITY_ROOT_FOLD
         dove, tt = TtFolder(fold_for_meas).createFolderToStoreMeasurements()
-        iff = IFMaker(self.interf, self.dm)
-        for amp in amp_list_tag:
-            tn = iff.acquisitionAndAnalysis(cmd_matrix_tag,
-                                            amp, shuffle=False,
-                                            template=None)
-            source = os.path.join(iff._storageFolder(), tn)
-            destination = dove
-            shutil.move(source, destination)
+        fits.writeto(os.path.join(dove, 'actuators.fits'),
+                     vector_of_actuators_to_test, overwrite=True)
         fits.writeto(os.path.join(dove, 'amplitude.fits'),
                      vector_of_amplitude_for_meas, overwrite=True)
+
+        for i in range(vector_of_actuators_to_test.shape[0]):
+            actuator_to_test = vector_of_actuators_to_test[i]
+            ima_amp_list = self._actuator_linearity(actuator_to_test, vector_of_amplitude_for_meas)
+            cube = np.ma.dstack(ima_amp_list)
+            fits.writeto(os.path.join(dove, 'act_%03d.fits' %actuator_to_test),
+                         cube.data)
+            fits.append(os.path.join(dove, 'act_%03d.fits' %actuator_to_test),
+                         cube.mask.astype(int))
+        self.dm.set_shape(np.zeros(self.dm.get_number_of_actuators()))
         return tt
 

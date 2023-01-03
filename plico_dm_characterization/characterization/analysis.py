@@ -15,6 +15,7 @@ class Analyser():
         pass
 
     def linearity(self, tn):
+        #da riscrivere tutta
         fold_for_meas = os.path.join(config.LINEARITY_ROOT_FOLD, tn)
         tt_list = os.listdir(fold_for_meas)
         #del(tt_list[0])
