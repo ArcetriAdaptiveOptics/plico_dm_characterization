@@ -7,7 +7,6 @@ import os
 #import glob
 from astropy.io import fits
 from plico_dm_characterization.configuration import config
-from plico_dm_characterization.influenceFunctionsMaker import IFMaker
 
 class Analyser():
 

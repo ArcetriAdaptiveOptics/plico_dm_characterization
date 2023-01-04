@@ -131,7 +131,7 @@ class MeasurementAcquisition():
                 self.dm.set_shape(cmd*temp)
                 ima = self.interf.wavefront()
                 ima_list.append(ima)
-            final_ima = ima_list[0] - 2*ima_list[1] + ima_list[2]
+            final_ima = (ima_list[0] - 2*ima_list[1] + ima_list[2]) / (2*template.shape[0]-1)
             ima_amp_list.append(final_ima)
         return ima_amp_list
         
