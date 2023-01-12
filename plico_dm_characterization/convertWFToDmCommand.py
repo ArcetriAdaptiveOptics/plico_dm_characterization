@@ -17,7 +17,6 @@ class Converter():
     def __init__(self, tt_an):
         an = IFMaker.loadAnalyzerFromIFMaker(tt_an)
         self._cube = an.getCube()
-        self._coord = an.getMaskGeometry()
         #analisi
         self._analysisMask = None
         self._intMat = None
@@ -38,7 +37,7 @@ class Converter():
         '''
         #manca l'utilizzo delle coordinate
         new_mask = np.ma.mask_or(wf.mask, self.getMasterMask())
-        self.setDetectorMask(new_mask)
+        self.setAnalysisMask(new_mask)
         wf_masked = np.ma.masked_array(wf.data, mask=new_mask)
         rec = self.getReconstructor()
         command = np.dot(rec, wf_masked.compressed())
@@ -64,24 +63,26 @@ class Converter():
         ----------
         analysis_mask: numpy array [pixels, pixels]
         '''
+        self._intMat = None
+        self._rec = None
         self._analysisMask = analysis_mask
 
     def setAnalysisMaskFromMasterMask(self):
         ''' Set the analysis mask using the master mask of analysis cube
         '''
-        self._analysisMask = self.getMasterMask()
+        self.setAnalysisMask(self.getMasterMask())
 
-    def setDetectorMask(self, mask_from_ima):
-        ''' Set the detector mask chosen
-
-        Parameters
-        ----------
-        detector_mask: numpy array [pixels, pixels]
-        '''
-        self._analysisMask = None
-        self._intMat = None
-        self._rec = None
-        self._analysisMask = mask_from_ima
+    # def setDetectorMask(self, mask_from_ima):
+    #     ''' Set the detector mask chosen
+    #
+    #     Parameters
+    #     ----------
+    #     detector_mask: numpy array [pixels, pixels]
+    #     '''
+    #     self._analysisMask = None
+    #     self._intMat = None
+    #     self._rec = None
+    #     self._analysisMask = mask_from_ima
 
     def getAnalysisMask(self):
         '''

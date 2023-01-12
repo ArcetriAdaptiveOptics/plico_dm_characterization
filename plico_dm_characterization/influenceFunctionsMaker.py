@@ -35,7 +35,7 @@ class IFMaker():
         self._dm = deformable_mirror
         self._interf = interferometer
         if deformable_mirror is not None:
-            self._nActs = deformable_mirror.get_number_of_actuators() #qualcosa del genere
+            self._nActs = deformable_mirror.get_number_of_actuators()
 
         #acquisizione
         self._nRepetitions = None
@@ -48,8 +48,6 @@ class IFMaker():
         self._tt_cmdH = None
         self._indexingList = None
         self._tt = None
-        #da fare
-        self._coord = None
 
         #analisi
         self._cube = None
@@ -112,14 +110,14 @@ class IFMaker():
         cmdH = CmdHistory(self._nActs)
         if shuffle is False:
             command_history_matrix_to_apply, self._tt_cmdH = \
-                    cmdH.tidyCommandHistoryMaker(self._actsVector,
+                    cmdH.tidyCommandHistoryMaker(indexing_input,
                                                  amplitude,
                                                  cmd_matrix,
                                                  n_rep,
                                                  template)
         if shuffle is True:
             command_history_matrix_to_apply, self._tt_cmdH = \
-                    cmdH.shuffleCommandHistoryMaker(self._actsVector,
+                    cmdH.shuffleCommandHistoryMaker(indexing_input,
                                                     amplitude,
                                                     cmd_matrix,
                                                     n_rep,
@@ -133,7 +131,6 @@ class IFMaker():
             file_name = 'image_%04d.fits' %i
             temp.interf_save_phasemap(dove, file_name, masked_image)
 
-        self._coord = self._maskGeometryCalculator(masked_image)
         self._dm.set_shape(np.zeros(self._nActs))
 
         #import code
@@ -142,13 +139,6 @@ class IFMaker():
         self._saveCube('Cube.fits')
         return tt
 
-    def _maskGeometryCalculator(self, masked_ima):
-        coord = 'qualche operazione usando la maschera'
-        #ricordarsi di aggiungerle al salvataggio
-        return coord
-
-    def getMaskGeometry(self):
-        return self._coord
 
     def _readTypeFromFitsNameTag(self, amplitude_fits_file_name,
                                  cmd_matrix_fits_file_name):
@@ -230,10 +220,8 @@ class IFMaker():
                         master_mask = np.ma.mask_or(master_mask, master_mask2add)
                     image += opd2add
                 image = np.ma.masked_array(image, mask=master_mask)
-                #pp_images.append(image)
-                    #image = image + ima * self._template[l] #sbagliato
-                #image = pp_images[0] + pp_images[1] #da rivedere molto
                 img_if = image / (2 * ampl_reorg[mis_amp] * (self._template.shape[0] - 1))
+                img_if = img_if - np.ma.median(img_if)
 
                 if_push_pull_kth = img_if
 

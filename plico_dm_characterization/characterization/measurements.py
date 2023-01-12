@@ -35,9 +35,9 @@ class MeasurementAcquisition():
         dove, tt = TtFolder(fold_for_meas).createFolderToStoreMeasurements()
         wf = self.interf.wavefront()
         command = converter.fromWfToDmCommand(wf)
-        fits.writeto(dove + 'imgstart.fits', wf.data)
-        fits.append(dove + 'imgstart.fits', wf.mask.astype(int))
-        fits.writeto(dove + 'flatDeltaCommand.fits', command)
+        fits.writeto(os.path.join(dove, 'imgstart.fits'), wf.data)
+        fits.append(os.path.join(dove, 'imgstart.fits'), wf.mask.astype(int))
+        fits.writeto(os.path.join(dove, 'flatDeltaCommand.fits'), command)
 
         pos = self.dm.get_shape()
         cmd_to_apply = pos - command
@@ -52,10 +52,10 @@ class MeasurementAcquisition():
         self._commandToApply = cmd_to_apply
         
         wf = self.interf.wavefront()
-        fits.writeto(dove + 'imgflat.fits', wf.data)
-        fits.append(dove + 'imgflat.fits', wf.mask.astype(int))
+        fits.writeto(os.path.join(dove, 'imgflat.fits'), wf.data)
+        fits.append(os.path.join(dove, 'imgflat.fits'), wf.mask.astype(int))
 
-        fits.writeto(dove + 'flatCommand.fits', self._commandToApply)
+        fits.writeto(os.path.join(dove, 'flatCommand.fits'), self._commandToApply)
         return tt
 
     def closeLoop(self, n_meas, delay=0):
