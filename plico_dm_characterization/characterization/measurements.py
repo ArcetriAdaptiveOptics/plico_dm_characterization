@@ -22,10 +22,13 @@ class MeasurementAcquisition():
         self.dm = deformable_mirror
         self.interf = interferometer
 
-    def flattening(self, tn_iff):
+    def flattening(self, tn_iff, zernike_to_remove=None):
         '''
         Parameters
         ----------
+        zernike_to_remove: numpy array
+            zernike to be removed from image before alignment
+            example: to remove piston, tip and tilt use zernike = np.arange(3) + 1
         tn_iff: string
             tracking number of if function to use for the reconstructor calculation
         '''
@@ -33,10 +36,17 @@ class MeasurementAcquisition():
 
         fold_for_meas = config.FLAT_ROOT_FOLD
         dove, tt = TtFolder(fold_for_meas).createFolderToStoreMeasurements()
-        wf = self.interf.wavefront()
-        command = converter.fromWfToDmCommand(wf)
-        fits.writeto(os.path.join(dove, 'imgstart.fits'), wf.data)
-        fits.append(os.path.join(dove, 'imgstart.fits'), wf.mask.astype(int))
+        ima = self.interf.wavefront()
+        if zernike_to_remove is not None:
+            coef, mat = zernike.zernikeFit(ima, zernike_to_remove)
+            surf = zernike.zernikeSurface(ima, coef, mat)
+            ima_ttr = ima - surf
+            command = converter.fromWfToDmCommand(ima_ttr)
+        else:
+            command = converter.fromWfToDmCommand(ima)
+
+        fits.writeto(os.path.join(dove, 'imgstart.fits'), ima.data)
+        fits.append(os.path.join(dove, 'imgstart.fits'), ima.mask.astype(int))
         fits.writeto(os.path.join(dove, 'flatDeltaCommand.fits'), command)
 
         pos = self.dm.get_shape()

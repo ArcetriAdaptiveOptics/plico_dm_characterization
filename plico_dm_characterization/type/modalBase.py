@@ -16,7 +16,7 @@ class ModalBase():
 
     HOW TO USE IT::
 
-        from m4.type.modalBase import ModalBase
+        from plico_dm_characterization.type.modalBase import ModalBase
         mb = ModalBase()
     '''
 

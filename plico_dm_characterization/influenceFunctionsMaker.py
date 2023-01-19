@@ -19,15 +19,15 @@ class IFMaker():
 
     HOW TO USE IT::
 
-        from ?.influenceFunctionsMaker import IFMaker
+        from .plico_dm_characterization.influenceFunctionsMaker import IFMaker
         dm = qualcosa che crea lo specchio
         interf = qualcosa che crea l'interferometro
         iff = IFMaker(interf, dm)
-        modalBaseTag = 'Hadarmard10.fits'
-        ampTag = 'ampTest10.fits'
+        modalBaseTag = 'HadarmardNActs.fits'
+        ampTag = 'ampTestNActs.fits'
 
-        tt = iff.acquisitionAndAnalysis(1, modalBaseTag, ampTag,
-                                    shuffle=False, template=None)
+        tt = iff.acquisitionAndAnalysis(modalBaseTag, ampTag,
+                            shuffle=False, template=None, n_rep=1)
     '''
 
     def __init__(self, interferometer, deformable_mirror=None):
@@ -125,8 +125,9 @@ class IFMaker():
         self._indexingList = cmdH.getIndexingList()
 
         n_images = 1
+        pos = self._dm.get_shape()
         for i in range(command_history_matrix_to_apply.shape[1]):
-            self._dm.set_shape(command_history_matrix_to_apply[:, i]) #vecchia setActsCommand
+            self._dm.set_shape(pos + command_history_matrix_to_apply[:, i])
             masked_image = self._interf.wavefront(n_images)
             file_name = 'image_%04d.fits' %i
             temp.interf_save_phasemap(dove, file_name, masked_image)

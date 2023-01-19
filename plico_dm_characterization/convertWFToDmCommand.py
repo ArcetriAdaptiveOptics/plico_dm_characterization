@@ -4,19 +4,24 @@ Authors
 '''
 import numpy as np
 from plico_dm_characterization.influenceFunctionsMaker import IFMaker
+from scipy.linalg import hadamard
+from plico_dm_characterization.ground import zernike
+
 
 class Converter():
     '''
     HOW TO USE IT::
 
-        from ?.convertWFToDmCommand import Converter
+        from plico_dm_characterization.convertWFToDmCommand import Converter
         tt = '20211210_111951'
         cc = Converter(tt)
+        cmd = cc.fromWfToDmCommand(wf)
     '''
 
-    def __init__(self, tt_an):
+    def __init__(self, tt_an, zonal=True):
         an = IFMaker.loadAnalyzerFromIFMaker(tt_an)
         self._cube = an.getCube()
+        self.zonal = zonal
         #analisi
         self._analysisMask = None
         self._intMat = None
@@ -28,7 +33,7 @@ class Converter():
         Parameters
         ----------
         wf: numpy masked array
-            wavefront to convert in a command for deformable mirror
+            image to convert in a command for deformable mirror
 
         Return
         ------
@@ -41,8 +46,35 @@ class Converter():
         wf_masked = np.ma.masked_array(wf.data, mask=new_mask)
         rec = self.getReconstructor()
         command = np.dot(rec, wf_masked.compressed())
+        if self.zonal is not True:
+            mat = hadamard(128)
+            hadaMat = mat[0:self._cube.shape[2], 0:self._cube.shape[2]]
+            command = np.matmul(hadaMat, command)
         return command
 
+    def getCommandsForZernikeModeOnDM(self):
+        zernike_cube = self._createZernikeOnDM()
+        self.setAnalysisMaskFromMasterMask()
+        rec = self.getReconstructor()
+
+        zernike_command_matrix_list = []
+        for i in range(zernike_cube.shape[2]):
+            comm = np.dot(rec, zernike_cube[:,:,i].compressed())
+            zernike_command_matrix_list.append(comm)
+        zernike_command_matrix = np.array(zernike_command_matrix_list)
+        return zernike_command_matrix.T
+
+    def _createZernikeOnDM(self):
+        ima = self._cube[:,:,0]
+        mask = self.getMasterMask()
+        image = np.ma.masked_array(ima.data, mask=mask)
+        coef, mat = zernike.zernikeFit(image, np.arange(10) + 1)
+        surf_list = []
+        for i in range(coef.size):
+            surf = zernike.zernikeSurface(image, 1., mat[:,i])
+            surf_list.append(surf)
+        zernike_cube = np.ma.dstack(surf_list)
+        return zernike_cube
 
     def getMasterMask(self):
         '''
