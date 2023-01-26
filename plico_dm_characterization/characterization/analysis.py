@@ -19,7 +19,7 @@ def linearity(tn):
 
     Returns
     -------
-    linearityMatrix: numpy array [n_amp: n_acts]
+    linearityMatrix: numpy array [n_amp, n_acts]
         
     '''
     fold_for_meas = os.path.join(config.LINEARITY_ROOT_FOLD, tn)
@@ -80,6 +80,8 @@ def _calcFitDiffAndRMSAct(amp, acts, linearityMatrix):
     return aVector, bVector, fit, diff, rms
 
 def _plotResults(linearityMatrix, fit, diff, acts, amp):
+    ''' Function for plot
+    '''
     n_figure = linearityMatrix.shape[1]
     plt.figure(figsize=(10, 16))
     
@@ -93,5 +95,44 @@ def _plotResults(linearityMatrix, fit, diff, acts, amp):
         plt.ylabel('displacement [nm]')
         plt.title('act #%d' %acts[i])
 
+def closeLoop(tn_list):
+    '''
+    Parameters
+    ----------
+    tn_list: string
+        tracking number list of flattening measurements obtained with
+        the measurement closeLoop function
+
+    Returns
+    ------
+    rms_flat_images: numpy array
+        vector containing the rms value of each flat image
+    rms_delta_command: numpy array
+        vector of standard deviation of each delta command
+    '''
+    imgflatList = []
+    deltaCmdList = []
+
+    for tt in tn_list:
+        path = os.path.join(config.FLAT_ROOT_FOLD, tt)
+        hduList= pyfits.open(os.path.join(path, 'imgflat.fits'))
+        img = np.ma.masked_array(hduList[0].data, hduList[1].data.astype(bool))
+        imgflatList.append(img)
         
-    
+        hduList = pyfits.open(os.path.join(path, 'flatDeltaCommand.fits'))
+        cmd = np.array(hduList[0].data)
+        deltaCmdList.append(cmd)
+
+    rmsImaList = []
+    rmsDeltaCmdList = []
+    for ima in imgflatList:
+        rmsima = ima.std()
+        tt = zernike.zernikeFit(ima, np.array([2, 3]))
+        rmstt = np.sqrt(rmsima**2 - tt[0]**2 - tt[1]**2)
+        rmsImaList.append(rmstt)
+    for cmd in deltaCmdList:
+        rmscmd = cmd.std()
+        rmsDeltaCmdList.append(rmscmd)
+
+    return np.array(rmsImaList), np.array(rmsDeltaCmdList)
+

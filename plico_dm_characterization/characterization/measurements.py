@@ -17,6 +17,12 @@ from plico_dm_characterization.type.modalAmplitude import ModalAmplitude
 from plico_dm_characterization.convertWFToDmCommand import Converter
 
 class MeasurementAcquisition():
+    '''
+        HOW TO USE IT::
+
+        from plico_dm_characterization.characterization.measurements import MeasurementAcquisition
+        ma = MeasurementAcquisition(dm, interf)
+    '''
 
     def __init__(self, deformable_mirror, interferometer):
         self.dm = deformable_mirror
@@ -69,6 +75,17 @@ class MeasurementAcquisition():
         return tt
 
     def closeLoop(self, n_meas, delay=0):
+        '''
+        Parameters
+        ----------
+        n_meas: int
+            number of times to repeat the flattening measurement
+
+        Returns
+        -------
+        tn_list: list
+            list of flattening tracking numbers
+        '''
         tt_list = []
         for i in range(0, n_meas):
             tt = self.flattening()

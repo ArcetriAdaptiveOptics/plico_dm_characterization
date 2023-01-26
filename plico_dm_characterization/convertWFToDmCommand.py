@@ -13,8 +13,8 @@ class Converter():
     HOW TO USE IT::
 
         from plico_dm_characterization.convertWFToDmCommand import Converter
-        tt = '20211210_111951'
-        cc = Converter(tt)
+        tt = '...'
+        cc = Converter(tn)
         cmd = cc.fromWfToDmCommand(wf)
     '''
 
@@ -53,28 +53,38 @@ class Converter():
         return command
 
     def getCommandsForZernikeModeOnDM(self):
+        '''
+        Function for the calculation of the zernike command (in Unit Mirror).
+        The first 10 Zernike are calculate as the product of the theoretical
+        modes on cube master mask and the reconstructor.
+        '''
         zernike_cube = self._createZernikeOnDM()
         self.setAnalysisMaskFromMasterMask()
         rec = self.getReconstructor()
 
         zernike_command_matrix_list = []
         for i in range(zernike_cube.shape[2]):
-            comm = np.dot(rec, zernike_cube[:,:,i].compressed())
+            comm = np.dot(rec, zernike_cube[:, :, i].compressed())
             zernike_command_matrix_list.append(comm)
         zernike_command_matrix = np.array(zernike_command_matrix_list)
         return zernike_command_matrix.T
 
     def _createZernikeOnDM(self):
-        ima = self._cube[:,:,0]
+        ima = self._cube[:, :, 0]
         mask = self.getMasterMask()
         image = np.ma.masked_array(ima.data, mask=mask)
         coef, mat = zernike.zernikeFit(image, np.arange(10) + 1)
         surf_list = []
         for i in range(coef.size):
-            surf = zernike.zernikeSurface(image, 1., mat[:,i])
+            surf = zernike.zernikeSurface(image, 1., mat[:, i])
             surf_list.append(surf)
         zernike_cube = np.ma.dstack(surf_list)
         return zernike_cube
+
+    def saveZernikeMat(self, zernike_command_matrix, dove):
+        from astropy.io import fits
+        fits.writeto(os.path.join(dove, 'ZernikeMat.fits'), zernike_command_matrix)
+        return
 
     def getMasterMask(self):
         '''
