@@ -1,5 +1,5 @@
 import unittest
-from m4.ground.timestamp import Timestamp
+from plico_dm_characterization.ground.timestamp import Timestamp
 
 
 class TestTimestamp(unittest.TestCase):
