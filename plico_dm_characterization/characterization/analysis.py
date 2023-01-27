@@ -115,11 +115,11 @@ def closeLoop(tn_list):
 
     for tt in tn_list:
         path = os.path.join(config.FLAT_ROOT_FOLD, tt)
-        hduList= pyfits.open(os.path.join(path, 'imgflat.fits'))
+        hduList= fits.open(os.path.join(path, 'imgflat.fits'))
         img = np.ma.masked_array(hduList[0].data, hduList[1].data.astype(bool))
         imgflatList.append(img)
         
-        hduList = pyfits.open(os.path.join(path, 'flatDeltaCommand.fits'))
+        hduList = fits.open(os.path.join(path, 'flatDeltaCommand.fits'))
         cmd = np.array(hduList[0].data)
         deltaCmdList.append(cmd)
 
