@@ -8,6 +8,7 @@ import os
 from astropy.io import fits
 from matplotlib import pyplot as plt
 from plico_dm_characterization.configuration import config
+from plico_dm_characterization.ground import zernike
 
 
 def linearity(tn):
