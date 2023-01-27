@@ -3,6 +3,7 @@ Authors
   - C. Selmi:  written in 2021
 '''
 import numpy as np
+import os
 from plico_dm_characterization.influenceFunctionsMaker import IFMaker
 from scipy.linalg import hadamard
 from plico_dm_characterization.ground import zernike
