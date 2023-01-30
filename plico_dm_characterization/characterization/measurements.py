@@ -74,13 +74,19 @@ class MeasurementAcquisition():
         fits.writeto(os.path.join(dove, 'flatCommand.fits'), self._commandToApply)
         return tt
 
-    def closeLoop(self, n_meas, delay=0):
+    def closeLoop(self, tn_iff, n_meas, delay=0, zernike_to_remove=None):
         '''
         Parameters
         ----------
+        tn_iff: string
+            tracking number of if function to use for the reconstructor calculation
+        zernike_to_remove: numpy array
+            zernike to be removed from image before alignment
+            example: to remove piston, tip and tilt use zernike = np.arange(3) + 1
         n_meas: int
             number of times to repeat the flattening measurement
-
+        delay: int
+            second of delay
         Returns
         -------
         tn_list: list
@@ -88,7 +94,7 @@ class MeasurementAcquisition():
         '''
         tt_list = []
         for i in range(0, n_meas):
-            tt = self.flattening()
+            tt = self.flattening(tn_iff, zernike_to_remove)
             tt_list.append(tt)
             time.sleep(delay)
         return tt_list

@@ -74,7 +74,7 @@ class Converter():
         ima = self._cube[:, :, 0]
         mask = self.getMasterMask()
         image = np.ma.masked_array(ima.data, mask=mask)
-        coef, mat = zernike.zernikeFit(image, np.arange(10) + 1)
+        coef, mat = zernike.zernikeFit(image, np.arange(11) + 1)
         surf_list = []
         for i in range(coef.size):
             surf = zernike.zernikeSurface(image, 1., mat[:, i])

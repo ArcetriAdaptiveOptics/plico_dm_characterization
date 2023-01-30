@@ -128,8 +128,8 @@ def closeLoop(tn_list):
     rmsDeltaCmdList = []
     for ima in imgflatList:
         rmsima = ima.std()
-        tt = zernike.zernikeFit(ima, np.array([2, 3]))
-        rmstt = np.sqrt(rmsima**2 - tt[0]**2 - tt[1]**2)
+        coef, mat = zernike.zernikeFit(ima, np.array([2, 3]))
+        rmstt = np.sqrt(rmsima**2 - coef[0]**2 - coef[1]**2)
         rmsImaList.append(rmstt)
     for cmd in deltaCmdList:
         rmscmd = cmd.std()
