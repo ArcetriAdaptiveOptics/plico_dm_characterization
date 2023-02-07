@@ -13,7 +13,8 @@ mirror of interest through the applications [plico_interferometers][plico_interf
 
 ## Description (and use) of the calibration algorithms
 __Acquisition and analysis of Influence Functions__
-Tthe influence functions are measured by moving each actuator (zonal commands) by the same 
+
+The influence functions are measured by moving each actuator (zonal commands) by the same 
 quantity in the positive and negative direction relative to 
 the mirror's initial position. Once the interferometric images corresponding to the positive 
 and negative displacement of the actuator have been acquired, they are subtracted and normalized 
@@ -80,6 +81,7 @@ all the information characterizing the measurement (YourModalBase, YourAmplitude
 and n_rep) are saved.
 
 __From Wavefront to Deformable Mirror command__
+
 The influence functions obtained above constitute the Interaction Matrix: calculation of the pseudo 
 inverse of this matrix returns the Reconstructor. The reconstructor allows the passage from wavefront 
 to command in mirror units (UC). 
@@ -103,6 +105,7 @@ If zonal is not True the command is calculated by multiplying the standard comma
 
 
 __Get command for Zernike modes on DM__
+
 With the class Converter it is also possible to calculate the commands to be given to the mirror to obtain the first n_modes Zernike modes: this computation is done by multiplying the theoretical Zernike surfaces, constructed on the intersection mask of the measurement cube, with the reconstructor.
 The commands to be used for this is
 ```
