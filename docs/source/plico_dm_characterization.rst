@@ -5,7 +5,7 @@ plico_dm_characterization package
 plico_dm_characterization.convertWFToDmCommand module
 ------------------------------------------------------
 
-.. automodule:: plico_dm_characterization.convertWFToDmCommand
+.. autoclass:: plico_dm_characterization.convertWFToDmCommand
     :members:
     :undoc-members:
     :show-inheritance:
@@ -13,7 +13,7 @@ plico_dm_characterization.convertWFToDmCommand module
 plico_dm_characterization.influenceFunctionsMaker module
 --------------------------------------------------------
 
-.. automodule:: plico_dm_characterization.influenceFunctionsMaker
+.. autofunction:: plico_dm_characterization.influenceFunctionsMaker
     :members:
     :undoc-members:
     :show-inheritance:
