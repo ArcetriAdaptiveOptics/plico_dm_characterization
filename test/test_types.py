@@ -7,7 +7,7 @@ import numpy as np
 import time
 import shutil
 import unittest
-import mock
+import unittest.mock as mock
 from test.test_helper import testDataRootDir
 
 class TestTypes(unittest.TestCase):
