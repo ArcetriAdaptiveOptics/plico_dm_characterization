@@ -82,7 +82,7 @@ setup(name=NAME,
                         "h5py",
                         ],
       package_data={
-          'plico_dm_characterization': ['data/*'],
+          'plico_dm_characterization': ['test/data/*'],
       },
       include_package_data=True,
       test_suite='test',

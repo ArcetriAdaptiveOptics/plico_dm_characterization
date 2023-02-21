@@ -2,3 +2,4 @@ numpy
 scipy
 astropy
 plico>=0.20
+h5py
