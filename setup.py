@@ -79,6 +79,7 @@ setup(name=NAME,
                         "numpy",
                         "astropy",
                         "scipy",
+                        "h5py",
                         ],
       package_data={
           'plico_dm_characterization': ['data/*'],
