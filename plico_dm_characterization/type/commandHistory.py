@@ -18,7 +18,7 @@ class CmdHistory():
 
     HOW TO USE IT::
 
-        from m4.type.commandHistory import CmdHistory
+        from plico_dm_characterization.type.commandHistory import CmdHistory
         cmdH = CmdHistory()
     '''
 

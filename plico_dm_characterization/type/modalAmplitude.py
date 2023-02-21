@@ -16,7 +16,7 @@ class ModalAmplitude():
 
     HOW TO USE IT::
 
-        from m4.type.modalAmplitude import ModalAmplitude
+        from plico_dm_characterization.type.modalAmplitude import ModalAmplitude
         ma = ModalAmplitude()
     '''
 
@@ -24,7 +24,7 @@ class ModalAmplitude():
         """The constructor """
         self._modalAmplitude = None
         self._fitsfilename = None
-        self.tag = None
+        self._tag = None
 
     @staticmethod
     def _storageFolder():
@@ -129,7 +129,7 @@ class ModalAmplitude():
                     ModalAmplitude class object
         """
         store_in_folder = ModalAmplitude._storageFolder()
-        hf = h5py.File(os.path.join(store_in_folder, filename), 'r')
+        hf = h5py.File(os.path.join(store_in_folder, filename + '.h5'), 'r')
         hf.keys()
         data = hf.get('dataset_1')
         modal_amplitude = np.array(data)

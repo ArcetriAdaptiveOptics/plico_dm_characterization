@@ -140,7 +140,7 @@ class ModalBase():
         theObject = ModalBase()
         theObject._fitsfilename = filename
         store_in_folder = ModalBase._storageFolder()
-        hf = h5py.File(os.path.join(store_in_folder, filename), 'r')
+        hf = h5py.File(os.path.join(store_in_folder, filename + '.h5'), 'r')
         hf.keys()
         data = hf.get('dataset_1')
         theObject._modalBase = np.array(data)
