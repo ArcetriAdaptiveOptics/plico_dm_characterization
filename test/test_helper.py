@@ -7,4 +7,4 @@ import os
 
 
 def testDataRootDir():
-    assert os.path.join(os.path.dirname(__file__), 'data')
+    return os.path.join(os.path.dirname(__file__), 'data')
