@@ -4,6 +4,7 @@ Authors
 '''
 import os
 import numpy as np
+import time
 from astropy.io import fits
 import shutil
 import unittest
@@ -56,6 +57,7 @@ class TestInfluenceFunctionsMaker(unittest.TestCase):
         mock_path_ma.return_value = os.path.join(testDataRootDir(), 'ModalAmplitude')
         mock_path_cmd.return_value = os.path.join(testDataRootDir(), 'CommandHistory')
         tt = self.iff.acquisitionAndAnalysis(cmd_matrix_tag, amplitude_tag)
+        time.sleep(3)
         tt2 = self.iff.acquisitionAndAnalysis(cmd_matrix_tag, amplitude_tag,
                                               shuffle=True, template=np.array([1, -1, 1]))
 

@@ -28,11 +28,10 @@ class TestConverterWF(unittest.TestCase):
         wf = np.ma.masked_array(hduList[0].data, mask=hduList[1].data.astype(bool))
 
         command = self.cc.fromWfToDmCommand(wf)
+        self.cc.getInteractionMatrix()
         mask = self.cc.getMasterMask()
         self.cc.setAnalysisMask(mask)
         self.cc.setAnalysisMaskFromMasterMask()
         self.cc.getAnalysisMask()
-        self.cc.getInteractionMatrix()
         self.cc.getReconstructor()
         #zernike_matrix = self.cc.getCommandsForZernikeModeOnDM(3)
-        

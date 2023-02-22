@@ -58,7 +58,7 @@ class TestTypes(unittest.TestCase):
         acts_vec = np.arange(5)
 
         cmd1, tt1 = cmdH.tidyCommandHistoryMaker(acts_vec, amp, modal_base, n_rep, template)
-        time.sleep(2)
+        time.sleep(3)
         cmd2, tt2 = cmdH.shuffleCommandHistoryMaker(acts_vec, amp, modal_base, n_rep, template=None)
         
         cmdH1 = CmdHistory.load(tt1, 0)

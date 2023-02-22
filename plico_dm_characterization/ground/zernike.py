@@ -193,18 +193,3 @@ def _l2mn_noll(j):
         m *= s
 
     return [m, n]
-
-
-##### TEST
-
-def _test():
-    from matplotlib.pyplot import imshow,show
-    import numpy as np
-    x = np.arange(-1,1,0.01)
-    yy = np.tile(np.transpose(x),(200,1))
-    xx = np.transpose(yy)
-    mm = (xx**2+yy**2) < 1
-    aa = _getZernike(xx[mm],yy[mm],np.arange(11)+1);
-    ii=xx*0;ii[mm]=aa[:,9];imshow(ii);show()
-
-

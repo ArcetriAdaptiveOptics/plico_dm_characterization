@@ -5,9 +5,6 @@ Autors
 
 """
 import numpy as np
-#import image as image
-#import scipy
-from matplotlib import pyplot as plt
 from scipy import ndimage
 
 def draw_mask(img, cx, cy, r, out=0):
