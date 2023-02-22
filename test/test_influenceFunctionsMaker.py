@@ -1,6 +1,6 @@
 '''
 Authors
-  - C. Selmi: written in 2023
+  - C. Selmi: written in February 2023
 '''
 import os
 import numpy as np
@@ -56,13 +56,16 @@ class TestInfluenceFunctionsMaker(unittest.TestCase):
         mock_path_ma.return_value = os.path.join(testDataRootDir(), 'ModalAmplitude')
         mock_path_cmd.return_value = os.path.join(testDataRootDir(), 'CommandHistory')
         tt = self.iff.acquisitionAndAnalysis(cmd_matrix_tag, amplitude_tag)
-        
-        self.iff._storageFolder()
+        tt2 = self.iff.acquisitionAndAnalysis(cmd_matrix_tag, amplitude_tag,
+                                              shuffle=True, template=np.array([1, -1, 1]))
+
         cube = self.iff.getCube()
         iff = IFMaker.loadAnalyzerFromIFMaker('20230222_102118')
+        iff._storageFolder()
         
         import platform
         if platform.system() == 'Windows':
             pass
         else:
             shutil.rmtree(os.path.join(testDataRootDir(), 'IFFunctions', tt))
+            shutil.rmtree(os.path.join(testDataRootDir(), 'IFFunctions', tt2))

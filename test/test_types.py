@@ -1,6 +1,6 @@
 '''
 Authors
-  - C. Selmi: written in 2023
+  - C. Selmi: written in February 2023
 '''
 import os
 import numpy as np
