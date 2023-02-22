@@ -80,6 +80,7 @@ setup(name=NAME,
                         "astropy",
                         "scipy",
                         "h5py",
+                        "matplotlib",
                         ],
       package_data={
           'plico_dm_characterization': ['test/data/*'],
