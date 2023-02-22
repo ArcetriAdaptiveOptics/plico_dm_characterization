@@ -63,5 +63,9 @@ class TestTypes(unittest.TestCase):
         self.assertTrue((cmd==cmd1).all())
         ind_list = cmdH1.getIndexingList()
         
-        shutil.rmtree(os.path.join(testDataRootDir(), 'CommandHistory', tt1))
-        shutil.rmtree(os.path.join(testDataRootDir(), 'CommandHistory', tt2))
+        import platform
+        if platform.system() == 'Windows':
+            pass
+        else:
+            shutil.rmtree(os.path.join(testDataRootDir(), 'CommandHistory', tt1))
+            shutil.rmtree(os.path.join(testDataRootDir(), 'CommandHistory', tt2))
