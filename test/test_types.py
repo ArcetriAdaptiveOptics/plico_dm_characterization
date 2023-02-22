@@ -17,8 +17,8 @@ class TestTypes(unittest.TestCase):
         from plico_dm_characterization.type.modalBase import ModalBase
         mb = ModalBase()
         mock_path.return_value = os.path.join(testDataRootDir(), 'ModalBase')
-        mb.getHadamardMatrix(11)
-        modal_base = mb.getZonalMatrix(11)
+        mb.getHadamardMatrix(3)
+        modal_base = mb.getZonalMatrix(3)
         mb.getModalBase()
         mb.getTag()
         mb.getFitsFileName()
@@ -26,6 +26,7 @@ class TestTypes(unittest.TestCase):
         mb.saveAsH5('testModalBase', modal_base)
         mb.loadFromFits('testModalBase')
         mb.loadFromH5('testModalBase')
+        mb._storageFolder()
 
     @mock.patch('plico_dm_characterization.type.modalAmplitude.ModalAmplitude._storageFolder', autospec=True)
     def testModalAmplitudeClass(self, mock_path):
@@ -35,24 +36,26 @@ class TestTypes(unittest.TestCase):
         ma.getModalAmplitude()
         ma.getTag()
         ma.getFitsFileName()
-        modal_amplitude = np.zeros(11)*0.1
+        modal_amplitude = np.zeros(3)*0.1
         ma.saveAsFits('testModalAmplitude', modal_amplitude)
         ma.saveAsH5('testModalAmplitude', modal_amplitude)
         ma.loadFromFits('testModalAmplitude')
         ma.loadFromH5('testModalAmplitude')
+        ma._storageFolder()
 
     @mock.patch('plico_dm_characterization.type.commandHistory.CmdHistory._storageFolder', autospec=True)
     def testCommandHistoryClass(self, mock_path):
         from plico_dm_characterization.type.commandHistory import CmdHistory
-        cmdH = CmdHistory(11)
+        cmdH = CmdHistory(5)
+        cmdH._storageFolder()
         mock_path.return_value = os.path.join(testDataRootDir(), 'CommandHistory')
         
-        amp = np.zeros(11)*0.1
-        modal_base = np.zeros((11, 11))
+        amp = np.zeros(5)*0.1
+        modal_base = np.zeros((5, 5))
         np.fill_diagonal(modal_base, 1)
         n_rep = 1
         template = np.array([1, -1, 1])
-        acts_vec = np.arange(11)
+        acts_vec = np.arange(5)
 
         cmd1, tt1 = cmdH.tidyCommandHistoryMaker(acts_vec, amp, modal_base, n_rep, template)
         time.sleep(2)
