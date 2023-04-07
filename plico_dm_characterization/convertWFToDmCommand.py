@@ -53,7 +53,7 @@ class Converter():
             command = np.matmul(hadaMat, command)
         return command
 
-    def getCommandsForZernikeModeOnDM(self, n_modes):
+    def getCommandsForZernikeModeOnDM(self, n_modes, mask=None):
         '''
         Function for the calculation of the zernike command (in Unit Mirror).
         The first n_modes of Zernike are calculate as the product of the theoretical
@@ -63,14 +63,22 @@ class Converter():
         ----------
         n_modes: int
             number of Zernike to generate
-            
+
+        Other Parameters
+        ---------------
+        mask: boolean numpy.ndarray
+            mask for Zernike definition.
+            The mask must be the same size as the images/masks in the cube.
         Returns
         -------
         zernike_command_matrix: numpy array [nActs, n_modes]
             matrix containing the Zernike mode for the mirror
         '''
-        zernike_cube = self._createZernikeOnDM(n_modes)
-        self.setAnalysisMaskFromMasterMask()
+        zernike_cube = self._createZernikeOnDM(n_modes, mask)
+        if mask is None:
+            self.setAnalysisMaskFromMasterMask()
+        else:
+            self.setAnalysisMask(mask)
         rec = self.getReconstructor()
 
         zernike_command_matrix_list = []
@@ -80,9 +88,12 @@ class Converter():
         zernike_command_matrix = np.array(zernike_command_matrix_list)
         return zernike_command_matrix.T
 
-    def _createZernikeOnDM(self, n_modes):
+    def _createZernikeOnDM(self, n_modes, mask=None):
         ima = self._cube[:, :, 0]
-        mask = self.getMasterMask()
+        if mask is None:
+            mask = self.getMasterMask()
+        else:
+            mask = mask
         image = np.ma.masked_array(ima.data, mask=mask)
         coef, mat = zernike.zernikeFit(image, np.arange(n_modes) + 1)
         surf_list = []

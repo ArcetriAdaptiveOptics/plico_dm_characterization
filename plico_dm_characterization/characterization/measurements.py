@@ -41,6 +41,7 @@ class MeasurementAcquisition():
         converter = Converter(tn_iff)
 
         fold_for_meas = config.FLAT_ROOT_FOLD
+        print(fold_for_meas)
         dove, tt = TtFolder(fold_for_meas).createFolderToStoreMeasurements()
         ima = self.interf.wavefront()
         if zernike_to_remove is not None:

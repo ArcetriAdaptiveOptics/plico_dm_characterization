@@ -25,9 +25,10 @@ def interf_save_phasemap(location, file_name, masked_image):
 
 def interf_readImage4D4020(file_name):
     """
+    Function for PhaseCam4020
     Parameters
     ----------
-        h5filename: string
+        file_name: string
              path of h5 file to convert
     Returns
     -------
@@ -41,6 +42,26 @@ def interf_readImage4D4020(file_name):
     mask[np.where(data == data.max())] = True
     ima = np.ma.masked_array(data * 632.8e-9, mask=mask)
     return ima
+
+def interf_readImage4D6110(file_name):
+    """
+    Function for PhaseCam6110
+    Parameters
+    ----------
+        file_name: string
+             path of h5 file to convert
+
+    Returns
+    -------
+            ima: numpy masked array
+                 masked array image
+    """
+    with h5py.File(file_name, 'r') as ff:
+        data = ff.get('/Measurement/SurfaceInWaves/Data')
+        meas = data[()]
+        mask = np.invert(np.isfinite(meas))
+    image = np.ma.masked_array(meas * 632.8e-9, mask=mask)
+    return image
 
 def interf_readImage(file_name):
     '''
