@@ -23,6 +23,7 @@ class Converter():
         an = IFMaker.loadAnalyzerFromIFMaker(tt_an)
         self._cube = an.getCube()
         self.zonal = zonal
+        self._tn = tt_an
         #analisi
         self._analysisMask = None
         self._intMat = None
@@ -105,6 +106,8 @@ class Converter():
 
     def saveZernikeMat(self, zernike_command_matrix, dove):
         from astropy.io import fits
+        header = fits.Header()
+        header['IFTN'] = self._tn
         fits.writeto(os.path.join(dove, 'ZernikeMat.fits'), zernike_command_matrix)
         return
 
