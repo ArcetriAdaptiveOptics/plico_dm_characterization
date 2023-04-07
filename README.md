@@ -109,14 +109,16 @@ __Get command for Zernike modes on DM__
 With the class Converter it is also possible to calculate the commands to be given to the mirror to obtain the first n_modes Zernike modes: this computation is done by multiplying the theoretical Zernike surfaces, constructed on the intersection mask of the measurement cube, with the reconstructor.
 The commands to be used for this is
 ```
-zernike_command_matrix = cc.getCommandsForZernikeModeOnDM(n_modes)
+zernike_command_matrix = cc.getCommandsForZernikeModeOnDM(n_modes, mask=None)
 ```
 where zernike_command_matrix has the shape [nActs, n_modes] and the commands are expressed in meters.
+If the mask is None the software uses the cube's master mask (i.e. the product of all masks) for generating Zernike commands, otherwise it uses the mask selected by the user (for example if you want to generate the Zernike on a small subaperture). Please, note that the mask you pass in the argument must be the same size as the images/masks that form the cube.
+
 It is possible to save the matrix using the command
 ```
 cc.saveZernikeMat(zernike_command_matrix, file_path)
 ```
-
+The header contains the influence function tracking number used.
 
 ## Data storage
 At the end of the calibration of a deformable mirror all essential data for its reuse in a different 
