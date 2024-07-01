@@ -48,6 +48,7 @@ class IFMaker():
         self._tt_cmdH = None
         self._indexingList = None
         self._tt = None
+        self._type_of_cmd_matrix = None
 
         #analisi
         self._cube = None
@@ -55,7 +56,6 @@ class IFMaker():
     @staticmethod
     def _storageFolder():
         """ Creates the path where to save measurement data"""
-        # '/Users/rm/Desktop/Arcetri/M4/Data/M4Data/OPTData/IFFunctions'
         return config.IFFUNCTIONS_ROOT_FOLDER
 
     def acquisitionAndAnalysis(self, cmd_matrix_tag,
@@ -91,6 +91,7 @@ class IFMaker():
         '''
         amplitude, cmd_matrix = self._readTypeFromFitsNameTag(amplitude_tag,
                                                               cmd_matrix_tag)
+        type_of_cmd_matrix = self._checkIfCmdMatrixIsAZonalMatrix(cmd_matrix)
 
         self._nRepetitions = n_rep
         if template is None:
@@ -101,6 +102,7 @@ class IFMaker():
         self._amplitude = amplitude
         self._cmdMatrixTag = cmd_matrix_tag
         self._cmdMatrix = cmd_matrix
+        self._type_of_cmd_matrix = type_of_cmd_matrix
 
         self._actsVector = np.arange(self._nActs)
         indexing_input = copy.copy(self._actsVector)
@@ -165,6 +167,46 @@ class IFMaker():
         mb = ModalBase.loadFromFits(cmd_matrix_fits_file_name)
         cmd_matrix = mb.getModalBase()
         return amplitude, cmd_matrix
+    
+    def _isDiagonal(self, matrix):
+        '''
+        Parameters
+        ----------
+        matrix: numpy array
+            matrix to be tested
+    
+        Returns
+        -------
+        bool: True if matrix is diagonal
+        '''
+        # Controlla se la matrice è quadrata
+        if len(matrix) != len(matrix[0]):
+            return False
+        
+        # Itera su tutti gli elementi della matrice
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                if i != j and matrix[i][j] != 0:
+                    return False
+        return True
+    
+    def _checkIfCmdMatrixIsAZonalMatrix(self, cmd_matrix):
+        '''
+        Parameters
+        ----------
+        cmd_matrix: numpy array
+            matrix to be tested
+            
+        Returns
+        -------
+        string: string
+            'zonal' or 'hadamard'
+        '''
+        if self._isDiagonal(cmd_matrix):
+            string = 'zonal'
+        else:
+            string = 'hadamard'
+        return string
 
     def _createCube(self):
         '''
@@ -178,7 +220,7 @@ class IFMaker():
                         cube from analysis
         '''
 
-        cube_all_act = None
+        #cube_all_act = None
         where = self._indexReorganization(self._indexingList, self._actsVector,
                                           self._nRepetitions)
         ampl_reorg = self._amplitudeReorganization(self._actsVector,
@@ -202,7 +244,7 @@ class IFMaker():
                 name = 'image_%04d.fits' %mis
                 print(name)
                 file_name = os.path.join(self._storageFolder(), self._tt, name)
-                image0 = temp.interf_readImage(file_name) #creare questa funzione nell'interf prendendola da ic
+                image0 = temp.interf_readImage(file_name) 
                 image_list = [image0]
                 for l in range(1, self._template.size):
                     name = 'image_%04d.fits' %(mis+l)
@@ -303,6 +345,7 @@ class IFMaker():
         header['CMDMTAG'] = self._cmdMatrixTag
         header['AMPTAG'] = self._amplitudeTag
         header['NACTS'] = self._nActs
+        header['TYPECMD'] = self._type_of_cmd_matrix
         pyfits.writeto(file_name, self._cube.data, header)
         pyfits.append(file_name, self._cube.mask.astype(int))
         pyfits.append(file_name, self._amplitude)
@@ -354,4 +397,5 @@ class IFMaker():
         theObject._tt_cmdH = header['TT_CMDH']
         theObject._cmdMatrixTag = header['CMDMTAG']
         theObject._amplitudeTag = header['AMPTAG']
+        theObject._type_of_cmd_matrix = header['TYPECMD']
         return theObject
