@@ -5,6 +5,7 @@ import sys
 from shutil import rmtree
 
 from setuptools import setup, Command
+#from setuptools.command.install import install
 
 NAME = 'plico_dm_characterization'
 DESCRIPTION = 'A suite of tools for calibration and characterization of deformable mirrors',
@@ -57,7 +58,6 @@ class UploadCommand(Command):
 
         sys.exit()
 
-
 setup(name=NAME,
       description=DESCRIPTION,
       version=about['__version__'],
@@ -87,5 +87,6 @@ setup(name=NAME,
       },
       include_package_data=True,
       test_suite='test',
-      cmdclass={'upload': UploadCommand, },
+      cmdclass={'upload': UploadCommand,
+                },
       )
