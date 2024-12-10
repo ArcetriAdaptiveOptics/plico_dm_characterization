@@ -19,10 +19,10 @@ class Converter():
         cmd = cc.fromWfToDmCommand(wf)
     '''
 
-    def __init__(self, tt_an, zonal=True):
+    def __init__(self, tt_an):
         an = IFMaker.loadAnalyzerFromIFMaker(tt_an)
         self._cube = an.getCube()
-        self.zonal = zonal
+        self._type = an._type_of_cmd_matrix
         self._tn = tt_an
         #analisi
         self._analysisMask = None
@@ -48,10 +48,14 @@ class Converter():
         wf_masked = np.ma.masked_array(wf.data, mask=new_mask)
         rec = self.getReconstructor()
         command = np.dot(rec, wf_masked.compressed())
-        if self.zonal is not True:
-            mat = hadamard(128)
-            hadaMat = mat[0:self._cube.shape[2], 0:self._cube.shape[2]]
-            command = np.matmul(hadaMat, command)
+        if self._type == 'hadamard':
+            command = self._commandForHadamardMatrix(command)
+        return command
+
+    def _commandForHadamardMatrix(self, zonal_command):
+        mat = hadamard(128)
+        hadaMat = mat[0:self._cube.shape[2], 0:self._cube.shape[2]]
+        command = np.matmul(hadaMat, zonal_command)
         return command
 
     def getCommandsForZernikeModeOnDM(self, n_modes, mask=None):
@@ -85,6 +89,8 @@ class Converter():
         zernike_command_matrix_list = []
         for i in range(zernike_cube.shape[2]):
             comm = np.dot(rec, zernike_cube[:, :, i].compressed())
+            if self._type == 'hadamard':
+                comm = self._commandForHadamardMatrix(comm)
             zernike_command_matrix_list.append(comm)
         zernike_command_matrix = np.array(zernike_command_matrix_list)
         return zernike_command_matrix.T

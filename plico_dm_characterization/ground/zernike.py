@@ -19,8 +19,9 @@ http://creativecommons.org/licenses/by-sa/3.0/
 ### Libraries
 
 import numpy as np
+import math
 from plico_dm_characterization.ground import geo
-fac = np.math.factorial
+fac = math.factorial
 
 def zernikeFit(img, zernike_index_vector):
     '''
@@ -121,7 +122,8 @@ def _zernike_rad(m, n, rho):
     if ((n-m) % 2):
         return rho*0.0
 
-    pre_fac = lambda k: (-1.0)**k * fac(n-k) / ( fac(k) * fac( (n+m)/2.0 - k ) * fac( (n-m)/2.0 - k ) )
+    #pre_fac = lambda k: (-1.0)**k * fac(n-k) / ( fac(k) * fac( (n+m)/2.0 - k ) * fac( (n-m)/2.0 - k ) ) #old version
+    pre_fac = lambda k: (-1.0)**k * fac(n-k) / ( fac(k) * fac( int((n+m)/2.0 - k) ) * fac( int((n-m)/2.0 - k) ) )
 
     return sum(pre_fac(k) * rho**(n-2.0*k) for k in range((n-m)//2+1))
 

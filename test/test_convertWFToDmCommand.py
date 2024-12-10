@@ -16,14 +16,14 @@ class TestConverterWF(unittest.TestCase):
     @mock.patch('plico_dm_characterization.influenceFunctionsMaker.IFMaker._storageFolder', autospec=True)
     def setUp(self, mock_path_iff):
         mock_path_iff.return_value = os.path.join(testDataRootDir(), 'IFFunctions')
-        self.cc = Converter('20230222_102118')
+        self.cc = Converter('20241210_082811')
 
     def tearDown(self):
         del(self.cc)
 
     
     def testConverter(self):
-        path = os.path.join(testDataRootDir(), 'imaAlpao88.fits')
+        path = os.path.join(testDataRootDir(), 'imaAlpao97.fits')
         hduList = fits.open(path)
         wf = np.ma.masked_array(hduList[0].data, mask=hduList[1].data.astype(bool))
 
