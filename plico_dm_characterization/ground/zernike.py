@@ -19,8 +19,9 @@ http://creativecommons.org/licenses/by-sa/3.0/
 ### Libraries
 
 import numpy as np
+import math
 from plico_dm_characterization.ground import geo
-fac = np.math.factorial
+fac = math.factorial
 
 def zernikeFit(img, zernike_index_vector):
     '''

@@ -62,7 +62,7 @@ class TestInfluenceFunctionsMaker(unittest.TestCase):
                                               shuffle=True, template=np.array([1, -1, 1]))
 
         cube = self.iff.getCube()
-        iff = IFMaker.loadAnalyzerFromIFMaker('20230222_102118')
+        iff = IFMaker.loadAnalyzerFromIFMaker('20241210_082811')
         iff._storageFolder()
         
         import platform
