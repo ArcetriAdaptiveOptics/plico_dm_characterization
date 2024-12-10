@@ -380,7 +380,7 @@ class IFMaker():
         file_name = os.path.join(theObject._storageFolder(), tt, 'Cube.fits')
         if storageFolder is not None:
             file_name = os.path.join(storageFolder, tt, 'Cube.fits')
-        header = pyfits.getheader(file_name)
+        header = pyfits.getheader(file_name, ignore_missing_simple=True)
         hduList = pyfits.open(file_name)
         theObject._cube = np.ma.masked_array(hduList[0].data,
                                              hduList[1].data.astype(bool))
