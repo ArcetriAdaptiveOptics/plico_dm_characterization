@@ -197,8 +197,7 @@ class Converter():
         if self._slaving_threshold > 0:
             n_acts_in_cube = self._cube.shape[2]
             newrec = np.zeros((n_acts_in_cube, rec.shape[1]))
-            for row in rec:
-                newrec[self._good_acts] = row
+            newrec[self._good_acts] = rec
             rec = newrec
 
         return rec
