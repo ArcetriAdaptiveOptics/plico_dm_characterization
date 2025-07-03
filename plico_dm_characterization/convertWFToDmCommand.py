@@ -28,7 +28,7 @@ class Converter():
         self._analysisMask = None
         self._intMat = None
         self._rec = None
-
+        self._good_acts = None
 
     def fromWfToDmCommand(self, wf):
         '''
@@ -58,7 +58,7 @@ class Converter():
         command = np.matmul(hadaMat, zonal_command)
         return command
 
-    def getCommandsForZernikeModeOnDM(self, n_modes, mask=None):
+    def getCommandsForZernikeModeOnDM(self, n_modes, mask=None, slaving_threshold=0.0):
         '''
         Function for the calculation of the zernike command (in Unit Mirror).
         The first n_modes of Zernike are calculate as the product of the theoretical
@@ -84,6 +84,7 @@ class Converter():
             self.setAnalysisMaskFromMasterMask()
         else:
             self.setAnalysisMask(mask)
+        self._slaving_threshold = slaving_threshold
         rec = self.getReconstructor()
 
         zernike_command_matrix_list = []
@@ -181,11 +182,26 @@ class Converter():
             self._intMat[:, i] = \
                             self._getMaskedInfluenceFunction(i).compressed()
 
+        if self._slaving_threshold > 0:
+            signal_per_mode = self._intMat.std(axis=0)
+            max_signal = signal_per_mode.max()
+            good_signals = np.where(signal_per_mode >= max_signal * self._slaving_threshold)[0]
+            self._intMat = self._intMat[:, good_signals]
+            self._good_acts = good_signals
+
     def _createSurfaceReconstructor(self, rCond=1e-15):
         self._rec = self._createRecWithPseudoInverse(rCond)
 
     def _createRecWithPseudoInverse(self, rCond):
-        return np.linalg.pinv(self.getInteractionMatrix(), rcond=rCond)
+        rec = np.linalg.pinv(self.getInteractionMatrix(), rcond=rCond)
+        if self._slaving_threshold > 0:
+            n_acts_in_cube = self._cube.shape[2]
+            newrec = np.zeros(n_acts_in_cube, rec.shape[1])
+            for row in rec:
+                newrec[self._good_acts] = row
+            rec = newrec
+
+        return rec
 
     def getInteractionMatrix(self):
         '''
